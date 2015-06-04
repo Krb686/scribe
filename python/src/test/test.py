@@ -21,12 +21,26 @@ class TestWidget(QWidget):
 		self.setWindowIcon(QIcon('sparrow.ico'))
 
 		
-		#Menu
+		# ==== Create Menus ====
+		# ======================
+		
 		self.menuBar = QMenuBar()
+		
+		# File Menu
 		self.fileMenu = QMenu("&File", self)
 		self.exitAction = self.fileMenu.addAction("E&xit")
 		self.exitAction.triggered.connect(self.exitApp)
 		self.menuBar.addMenu(self.fileMenu)
+		
+		# Edit Menu
+		self.editMenu = QMenu("&Edit", self)
+		self.menuBar.addMenu(self.editMenu)
+		
+		# Help Menu
+		self.helpMenu = QMenu("&Help", self)
+		self.aboutAction = self.helpMenu.addAction("&About")
+		self.aboutAction.triggered.connect(self.openHelp)
+		self.menuBar.addMenu(self.helpMenu)
 		
 		
 		#Layout
@@ -35,6 +49,12 @@ class TestWidget(QWidget):
 
 		self.setLayout(layout)
 		self.show()
+		
+	def openHelp(self):
+		helpDialog = QDialog()
+		helpDialog.resize(300, 300)
+		helpDialog.setWindowTitle("About")
+		helpDialog.exec_()
 		
 	# Exit
 	def exitApp(self):
