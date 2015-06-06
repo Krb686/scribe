@@ -80,6 +80,7 @@ class ScribeMainWindow(QMainWindow):
 		# ==============================
 		toolBar = QToolBar(self)
 		toolBar.setWindowTitle("Action Bar")
+		toolBar.setMovable(False)
 		toolBar.addAction(openAction)
 		toolBar.addAction(saveAction)
 		self.addToolBar(toolBar)
@@ -87,6 +88,7 @@ class ScribeMainWindow(QMainWindow):
 		
 		navBar = QToolBar(self)
 		navBar.setWindowTitle("Navigation Bar")
+		navBar.setMovable(False)
 		
 		buttonGroup = QButtonGroup()
 		
@@ -129,7 +131,7 @@ class ScribeMainWindow(QMainWindow):
 		
 		
 		
-		navBar.setMovable(False)
+		
 		self.addToolBar(Qt.RightToolBarArea, navBar)
 		
 		
@@ -142,6 +144,8 @@ class ScribeMainWindow(QMainWindow):
 		# == Main widget
 		itemList = QTreeView()
 		itemList.setIndentation(0)
+		itemList.setRootIsDecorated(False)
+		itemList.setAlternatingRowColors(True)
 		
 		itemModel = self.createModel()
 		
