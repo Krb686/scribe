@@ -33,6 +33,11 @@ class ScribeMainWindow(QMainWindow):
 		# File Menu
 		fileMenu = menuBar.addMenu('&File')
 		
+		newAction = QAction(QIcon('./icons/paper_blank.ico'), "New", self)
+		newAction.setShortcut('Ctrl+N')
+		newAction.setStatusTip('Create a new contact...')
+		newAction.triggered.connect(self.newContactDialog)
+		
 		openAction = QAction(QIcon('./icons/tan_folder.ico'), "&Open", self)
 		openAction.setShortcut('Ctrl+O')
 		openAction.setStatusTip('Open file...')
@@ -52,6 +57,7 @@ class ScribeMainWindow(QMainWindow):
 		exitAction.setStatusTip('Exit application')
 		exitAction.triggered.connect(QApplication.quit)
 		
+		fileMenu.addAction(newAction)
 		fileMenu.addAction(openAction)
 		fileMenu.addAction(saveAction)
 		fileMenu.addAction(saveAsAction)
@@ -67,6 +73,10 @@ class ScribeMainWindow(QMainWindow):
 		
 		editMenu.addAction(settingsAction)
 		
+		# Tools Menu
+		toolsMenu = menuBar.addMenu("Tools")
+		
+		
 		
 		# Help Menu
 		helpMenu = menuBar.addMenu("&Help")
@@ -81,8 +91,11 @@ class ScribeMainWindow(QMainWindow):
 		toolBar = QToolBar(self)
 		toolBar.setWindowTitle("Action Bar")
 		toolBar.setMovable(False)
+		toolBar.addAction(newAction)
 		toolBar.addAction(openAction)
 		toolBar.addAction(saveAction)
+		toolBar.addSeparator()
+		toolBar.addAction(settingsAction)
 		self.addToolBar(toolBar)
 		
 		
@@ -166,7 +179,8 @@ class ScribeMainWindow(QMainWindow):
 		
 		self.show()
 		
-		
+	def newContactDialog(self):
+		pass
 		
 	def openDialog(self):
 		pass
