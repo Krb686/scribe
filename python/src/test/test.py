@@ -4,8 +4,7 @@ from PyQt5.QtWidgets import *
 #from PyQt5.QtWidgets import (QApplication, QDialog, QMenuBar, QMenu, QVBoxLayout, QWidget, QToolBar, QMainWindow, QAction, QTreeView, QHBoxLayout)
 from PyQt5.QtGui import (QIcon, QStandardItemModel)
 
-from PyQt5.QtCore import (QDate, QDateTime, QRegExp, QSortFilterProxyModel, Qt,
-        QTime)
+from PyQt5.QtCore import *
 
 # TestWidget Class
 class ScribeMainWindow(QMainWindow):
@@ -24,7 +23,7 @@ class ScribeMainWindow(QMainWindow):
 		self.setWindowTitle('Scribe')
 		self.setWindowIcon(QIcon('./icons/blue_scroll.ico'))
 		
-		
+		self.setDockNestingEnabled(False)
 		# ======== Create Menus ========
 		# ==============================
 		menuBar = self.menuBar()
@@ -36,7 +35,7 @@ class ScribeMainWindow(QMainWindow):
 		newAction = QAction(QIcon('./icons/paper_blank.ico'), "New", self)
 		newAction.setShortcut('Ctrl+N')
 		newAction.setStatusTip('Create a new contact...')
-		newAction.triggered.connect(self.newContactDialog)
+		newAction.triggered.connect(self.debugPrint)
 		
 		openAction = QAction(QIcon('./icons/tan_folder.ico'), "&Open", self)
 		openAction.setShortcut('Ctrl+O')
@@ -97,11 +96,12 @@ class ScribeMainWindow(QMainWindow):
 		toolBar.addSeparator()
 		toolBar.addAction(settingsAction)
 		self.addToolBar(toolBar)
+		self.addToolBarBreak()
 		
 		
-		navBar = QToolBar(self)
-		navBar.setWindowTitle("Navigation Bar")
-		navBar.setMovable(False)
+		self.navBar = QToolBar(self)
+		self.navBar.setWindowTitle("Navigation Bar")
+		self.navBar.setMovable(False)
 		
 		buttonGroup = QButtonGroup()
 		
@@ -111,41 +111,36 @@ class ScribeMainWindow(QMainWindow):
 		addressBookButton.setChecked(True)
 		addressBookButton.setAutoExclusive(True)
 		buttonGroup.addButton(addressBookButton)
-		navBar.addWidget(addressBookButton)
-		navBar.addSeparator()
+		self.navBar.addWidget(addressBookButton)
+		self.navBar.addSeparator()
 		
 		invoicesButton = QPushButton(QIcon('./icons/paper_folded_bullets.ico'), "Invoices", self)
 		invoicesButton.setFlat(True)
 		invoicesButton.setCheckable(True)
 		invoicesButton.setAutoExclusive(True)
 		buttonGroup.addButton(invoicesButton)
-		navBar.addWidget(invoicesButton)
-		navBar.addSeparator()
+		self.navBar.addWidget(invoicesButton)
+		self.navBar.addSeparator()
 		
 		paymentsButton = QPushButton(QIcon('./icons/green_dollar_sign.ico'), "Payments", self)
 		paymentsButton.setFlat(True)
 		paymentsButton.setCheckable(True)
 		paymentsButton.setAutoExclusive(True)
 		buttonGroup.addButton(paymentsButton)
-		navBar.addWidget(paymentsButton)
-		navBar.addSeparator()
+		self.navBar.addWidget(paymentsButton)
+		self.navBar.addSeparator()
 		
 		syncButton = QPushButton(QIcon('./icons/green_blue_sync.ico'), "Sync", self)
 		syncButton.setFlat(True)
 		syncButton.setCheckable(True)
 		syncButton.setAutoExclusive(True)
 		buttonGroup.addButton(syncButton)
-		navBar.addWidget(syncButton)
-		navBar.addSeparator()
+		self.navBar.addWidget(syncButton)
+		self.navBar.addSeparator()
 		
 		
+		self.addToolBar(Qt.TopToolBarArea, self.navBar)
 		
-		
-		
-		
-		
-		
-		self.addToolBar(Qt.RightToolBarArea, navBar)
 		
 		
 		# ======== Create Statusbar ======
@@ -155,10 +150,10 @@ class ScribeMainWindow(QMainWindow):
 		
 		
 		# == Main widget
-		itemList = QTreeView()
-		itemList.setIndentation(0)
-		itemList.setRootIsDecorated(False)
-		itemList.setAlternatingRowColors(True)
+		self.itemList = QTableView()
+		self.itemList.setAlternatingRowColors(True)
+		self.itemList.setContextMenuPolicy(Qt.CustomContextMenu)
+		self.itemList.customContextMenuRequested.connect(self.addressContextDialog)
 		
 		itemModel = self.createModel()
 		
@@ -167,20 +162,53 @@ class ScribeMainWindow(QMainWindow):
 		#self.addItem(itemModel, "Kevin", "1/2/34", "1234 Mainstreet Lane")
 		#self.addItem(itemModel, "Kevin", "1/2/34", "1234 Mainstreet Lane")
 		
-		itemList.setModel(itemModel)
+		self.itemList.setModel(itemModel)
 		
 		
 		
 		# Layout
-		self.setCentralWidget(itemList)
+		self.setCentralWidget(self.itemList)
 		
 		
 		
 		
 		self.show()
 		
+	def addressContextDialog(self, point):
+	
+		
+		# Create the context menu widget
+		self.addressContextMenu = QMenu()
+		self.addressContextMenu.resize(200, 100)
+		
+		# Create the actions for the menu
+		newContactAction = QAction(QIcon('./icons/green_plus.ico'), "Create new contact", self.addressContextMenu)
+		
+		
+		self.addressContextMenu.addAction(newContactAction)
+		self.addressContextMenu.show()
+		
+		
+		itemListOffset_x = self.itemList.pos().x()
+		itemListOffset_y = self.itemList.pos().y()
+		
+		windowOffset_x = self.pos().x()
+		windowOffset_y = self.pos().y()
+		
+		totalOffset_x = itemListOffset_x + windowOffset_x + 20
+		totalOffset_y = itemListOffset_y + windowOffset_y + 50
+		
+		
+		
+		targetPoint = QPoint(point.x()+totalOffset_x, point.y()+totalOffset_y)
+		print(targetPoint)
+		
+		
+		self.addressContextMenu.move(targetPoint)
+		
+		
 	def newContactDialog(self):
-		pass
+		debugPrint()
 		
 	def openDialog(self):
 		pass
@@ -190,6 +218,9 @@ class ScribeMainWindow(QMainWindow):
 		
 	def saveFileAs(self):
 		pass
+		
+	def debugPrint(self):
+		print(self.toolBarArea(self.navBar))
 		
 	def createModel(self):
 		model = QStandardItemModel(0, 3)
