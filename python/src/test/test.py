@@ -156,6 +156,7 @@ class ScribeMainWindow(QMainWindow):
 		self.itemList.customContextMenuRequested.connect(self.addressContextDialog)
 		self.itemList.setSelectionBehavior(QAbstractItemView.SelectRows)
 		
+		
 		itemModel = self.createModel()
 		
 		self.addItem(itemModel, "John Smith", "(517)-286-1273", "1234 Mainstreet Lane")
@@ -164,7 +165,7 @@ class ScribeMainWindow(QMainWindow):
 		#self.addItem(itemModel, "Kevin", "1/2/34", "1234 Mainstreet Lane")
 		
 		self.itemList.setModel(itemModel)
-		
+		header = self.itemList.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		
 		
 		# Layout
@@ -183,6 +184,7 @@ class ScribeMainWindow(QMainWindow):
 		
 		# Create the actions for the menu
 		newContactAction = QAction(QIcon('./icons/green_plus.ico'), "Create new contact", self.addressContextMenu)
+		newContactAction.triggered.connect(self.newContactDialog)
 		self.addressContextMenu.addAction(newContactAction)
 		
 		indices = self.itemList.selectedIndexes()
@@ -212,14 +214,16 @@ class ScribeMainWindow(QMainWindow):
 		
 		
 		targetPoint = QPoint(point.x()+totalOffset_x, point.y()+totalOffset_y)
-		print(targetPoint)
 		
 		
 		self.addressContextMenu.move(targetPoint)
 		
 		
 	def newContactDialog(self):
-		debugPrint()
+		self.newContactDialogBox = QDialog()
+		self.newContactDialogBox.resize(500, 400)
+		self.newContactDialogBox.setWindowTitle("Create New Contact")
+		self.newContactDialogBox.show()
 		
 	def openDialog(self):
 		pass
@@ -239,6 +243,7 @@ class ScribeMainWindow(QMainWindow):
 		model.setHeaderData(0, Qt.Horizontal, "Name")
 		model.setHeaderData(1, Qt.Horizontal, "Phone")
 		model.setHeaderData(2, Qt.Horizontal, "Address")
+		model.setHeaderData(3, Qt.Horizontal, "")
 		
 		return model
 		
