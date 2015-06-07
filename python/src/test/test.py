@@ -6,6 +6,8 @@ from PyQt5.QtGui import (QIcon, QStandardItemModel)
 
 from PyQt5.QtCore import *
 
+from NewContactDialog import NewContactDialog
+
 # TestWidget Class
 class ScribeMainWindow(QMainWindow):
 	def __init__(self):
@@ -220,7 +222,7 @@ class ScribeMainWindow(QMainWindow):
 		
 		
 	def newContactDialog(self):
-		self.newContactDialogBox = QDialog()
+		self.newContactDialogBox = NewContactDialog()
 		self.newContactDialogBox.resize(500, 400)
 		self.newContactDialogBox.setWindowTitle("Create New Contact")
 		self.newContactDialogBox.show()
