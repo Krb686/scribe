@@ -154,6 +154,7 @@ class ScribeMainWindow(QMainWindow):
 		self.itemList.setAlternatingRowColors(True)
 		self.itemList.setContextMenuPolicy(Qt.CustomContextMenu)
 		self.itemList.customContextMenuRequested.connect(self.addressContextDialog)
+		self.itemList.setSelectionBehavior(QAbstractItemView.SelectRows)
 		
 		itemModel = self.createModel()
 		
@@ -175,7 +176,6 @@ class ScribeMainWindow(QMainWindow):
 		self.show()
 		
 	def addressContextDialog(self, point):
-	
 		
 		# Create the context menu widget
 		self.addressContextMenu = QMenu()
@@ -183,10 +183,21 @@ class ScribeMainWindow(QMainWindow):
 		
 		# Create the actions for the menu
 		newContactAction = QAction(QIcon('./icons/green_plus.ico'), "Create new contact", self.addressContextMenu)
-		
-		
 		self.addressContextMenu.addAction(newContactAction)
+		
+		indices = self.itemList.selectedIndexes()
+		if(len(indices) > 1):
+			deleteContactAction = QAction(QIcon('./icons/red_minus.ico'), "Delete contact", self.addressContextMenu)
+			self.addressContextMenu.addAction(deleteContactAction)
+		
+		
+		
+		
+		
+		
+		
 		self.addressContextMenu.show()
+		
 		
 		
 		itemListOffset_x = self.itemList.pos().x()
