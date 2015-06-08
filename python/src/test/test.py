@@ -192,6 +192,7 @@ class ScribeMainWindow(QMainWindow):
 		indices = self.itemList.selectedIndexes()
 		if(len(indices) > 1):
 			deleteContactAction = QAction(QIcon('./icons/red_minus.ico'), "Delete contact", self.addressContextMenu)
+			deleteContactAction.triggered.connect(self.deleteContact)
 			self.addressContextMenu.addAction(deleteContactAction)
 		
 		
@@ -220,6 +221,11 @@ class ScribeMainWindow(QMainWindow):
 		
 		self.addressContextMenu.move(targetPoint)
 		
+	def deleteContact(self):
+		indices = self.itemList.selectedIndexes()
+		model = self.itemList.model()
+		model.removeRow(indices[0].row())
+		#print(indices[0].row())
 		
 	def newContactDialog(self):
 		self.newContactDialogBox = NewContactDialog()
