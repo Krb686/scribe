@@ -25,7 +25,10 @@ class ScribeMainWindow(QMainWindow):
 		self.setWindowTitle('Scribe')
 		self.setWindowIcon(QIcon('./icons/blue_scroll.ico'))
 		
+	
 		self.setDockNestingEnabled(False)
+		
+		
 		# ======== Create Menus ========
 		# ==============================
 		menuBar = self.menuBar()
@@ -74,6 +77,7 @@ class ScribeMainWindow(QMainWindow):
 		
 		editMenu.addAction(settingsAction)
 		
+		
 		# Tools Menu
 		toolsMenu = menuBar.addMenu("Tools")
 		
@@ -87,7 +91,7 @@ class ScribeMainWindow(QMainWindow):
 		
 		helpMenu.addAction(aboutAction)
 		
-		# ======== Create Toolbar ======
+		# ======== Toolbar ======
 		# ==============================
 		toolBar = QToolBar(self)
 		toolBar.setWindowTitle("Action Bar")
@@ -100,14 +104,15 @@ class ScribeMainWindow(QMainWindow):
 		self.addToolBar(toolBar)
 		self.addToolBarBreak()
 		
-		
+		# ======== Navbar ======
+		# ==============================
 		self.navBar = QToolBar(self)
 		self.navBar.setWindowTitle("Navigation Bar")
 		self.navBar.setMovable(False)
 		
 		buttonGroup = QButtonGroup()
 		
-		addressBookButton = QPushButton(QIcon('./icons/blue_binder.ico'), "Address Book", self)
+		addressBookButton = QPushButton(QIcon('./icons/blue_binder.ico'), "Customer Directory", self)
 		addressBookButton.setFlat(True)
 		addressBookButton.setCheckable(True)
 		addressBookButton.setChecked(True)
@@ -151,22 +156,24 @@ class ScribeMainWindow(QMainWindow):
 		
 		
 		
-		# == Main widget
+		# ======== Main Widget ========
+		# ==============================
 		self.itemList = QTableView()
 		self.itemList.setAlternatingRowColors(True)
 		self.itemList.setContextMenuPolicy(Qt.CustomContextMenu)
 		self.itemList.customContextMenuRequested.connect(self.addressContextDialog)
 		self.itemList.setSelectionBehavior(QAbstractItemView.SelectRows)
+		self.itemList.setSortingEnabled(True)
 		
 		
-		itemModel = self.createModel()
+		self.itemModel = self.createModel()
 		
-		self.addItem(itemModel, "John Smith", "(517)-286-1273", "1234 Mainstreet Lane")
-		self.addItem(itemModel, "Melissa King", "(517)-743-2217", "1312 Sunnybrook Road")
-		#self.addItem(itemModel, "Kevin", "1/2/34", "1234 Mainstreet Lane")
-		#self.addItem(itemModel, "Kevin", "1/2/34", "1234 Mainstreet Lane")
+		self.addItem(self.itemModel, "John Smith", "(517)-286-1273", "1234 Mainstreet Lane")
+		self.addItem(self.itemModel, "Melissa King", "(517)-743-2217", "1312 Sunnybrook Road")
+		self.addItem(self.itemModel, "Steve Smith", "(819)-246-3324", "976 Tarmac Street")
+		self.addItem(self.itemModel, "Sarah Williams", "(808)-296-4312", "1234 Mainstreet Lane")
 		
-		self.itemList.setModel(itemModel)
+		self.itemList.setModel(self.itemModel)
 		header = self.itemList.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		
 		
@@ -228,10 +235,10 @@ class ScribeMainWindow(QMainWindow):
 		#print(indices[0].row())
 		
 	def newContactDialog(self):
-		self.newContactDialogBox = NewContactDialog()
+		self.newContactDialogBox = NewContactDialog(self)
 		self.newContactDialogBox.resize(500, 400)
 		self.newContactDialogBox.setWindowTitle("Create New Contact")
-		self.newContactDialogBox.show()
+		self.newContactDialogBox.exec_()
 		
 	def openDialog(self):
 		pass
@@ -255,6 +262,8 @@ class ScribeMainWindow(QMainWindow):
 		
 		return model
 		
+	def getModel(self):
+		return self.itemModel
 		
 	def addItem(self, model, name, phone, address):
 		model.insertRow(0)
