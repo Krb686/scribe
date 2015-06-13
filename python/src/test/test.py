@@ -8,11 +8,17 @@ from PyQt5.QtCore import *
 
 from NewContactDialog import NewContactDialog
 
+import style
+
 # TestWidget Class
 class ScribeMainWindow(QMainWindow):
 	def __init__(self):
 		super(ScribeMainWindow, self).__init__()
-		
+
+		f = open('../../../resources/darkorange.stylesheet', 'r')
+		self.styleData = f.read()
+		f.close()
+
 		self.initUI()
 		
 	# Initialize UI
@@ -20,7 +26,9 @@ class ScribeMainWindow(QMainWindow):
 	
 		# Geometry
 		self.setGeometry(448, 156, 1024, 768)
-		
+
+		self.setStyleSheet(self.styleData)
+
 		#Text
 		self.setWindowTitle('Scribe')
 		self.setWindowIcon(QIcon('./icons/blue_scroll.ico'))
@@ -148,7 +156,10 @@ class ScribeMainWindow(QMainWindow):
 		
 		self.addToolBar(Qt.TopToolBarArea, self.navBar)
 		
+		# ======== Action Bar ======== #
 		
+		self.actionBar = QToolBar(self)
+		self.addToolBar(Qt.LeftToolBarArea, self.actionBar)
 		
 		# ======== Create Statusbar ======
 		# ==============================
@@ -288,5 +299,6 @@ class ScribeMainWindow(QMainWindow):
 if __name__ == '__main__':
 
 	app = QApplication(sys.argv)
+	app.setStyle('Plastique')
 	SMW = ScribeMainWindow()
 	sys.exit(app.exec_())
