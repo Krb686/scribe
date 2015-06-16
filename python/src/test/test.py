@@ -2,9 +2,10 @@
 import sys
 from PyQt5.QtWidgets import *
 # from PyQt5.QtWidgets import (QApplication, QDialog, QMenuBar, QMenu, QVBoxLayout, QWidget, QToolBar, QMainWindow, QAction, QTreeView, QHBoxLayout)
-from PyQt5.QtGui import (QIcon, QStandardItemModel)
+from PyQt5.QtGui import (QIcon, QStandardItemModel, QStandardItem)
 
 from PyQt5.QtCore import *
+from PyQt5.QSql import QSqlDatabase
 
 from NewContactDialog import NewContactDialog
 
@@ -20,6 +21,7 @@ class ScribeMainWindow(QMainWindow):
 		f.close()
 
 		self.initUI()
+		self.initDbConnection()
 
 	# Initialize UI
 	def initUI(self):
@@ -119,19 +121,21 @@ class ScribeMainWindow(QMainWindow):
 
 		buttongroup = QButtonGroup()
 
-		addressBookButton = QPushButton(QIcon('./icons/blue_binder.ico'), "Customer Directory", self)
-		addressBookButton.setFlat(True)
-		addressBookButton.setCheckable(True)
-		addressBookButton.setChecked(True)
-		addressBookButton.setAutoExclusive(True)
-		buttongroup.addButton(addressBookButton)
-		self.navBar.addWidget(addressBookButton)
+		directoryButton = QPushButton(QIcon('./icons/blue_binder.ico'), "Directory", self)
+		directoryButton.setFlat(True)
+		directoryButton.setCheckable(True)
+		directoryButton.setChecked(True)
+		directoryButton.setAutoExclusive(True)
+		directoryButton.clicked.connect(self.showDirectoryPage)
+		buttongroup.addButton(directoryButton)
+		self.navBar.addWidget(directoryButton)
 		self.navBar.addSeparator()
 
 		invoicesButton = QPushButton(QIcon('./icons/paper_folded_bullets.ico'), "Invoices", self)
 		invoicesButton.setFlat(True)
 		invoicesButton.setCheckable(True)
 		invoicesButton.setAutoExclusive(True)
+		invoicesButton.clicked.connect(self.showInvoicePage)
 		buttongroup.addButton(invoicesButton)
 		self.navBar.addWidget(invoicesButton)
 		self.navBar.addSeparator()
@@ -171,10 +175,23 @@ class ScribeMainWindow(QMainWindow):
 		# ==============================
 		self.statusBar()
 
+		# ======== Invoices Page ========
+		# ===============================
+		self.invoicesWidget = QTreeView()
+		self.invoicesModel = QStandardItemModel()
+		sampleItem = QStandardItem("Test")
+		self.invoicesModel.appendRow(sampleItem)
+		self.invoicesWidget.setModel(self.invoicesModel)
+
+		# ======== Tab Widget ========
+		self.customerDirectoryTabWidget = QTabWidget()
 
 
 		# ======== Main Widget ========
 		# ==============================
+		self.mainWidget = QStackedWidget()
+
+
 		self.itemList = QTableView()
 		self.itemList.setAlternatingRowColors(True)
 		self.itemList.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -192,11 +209,27 @@ class ScribeMainWindow(QMainWindow):
 		self.itemList.setModel(self.itemModel)
 		header = self.itemList.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
+		self.customerDirectoryTabWidget.addTab(self.itemList, "Customers")
 
+		businessesTableView = QTableView()
+		self.customerDirectoryTabWidget.addTab(businessesTableView, "Businesses")
+
+
+
+		self.mainWidget.addWidget(self.customerDirectoryTabWidget)
+		self.mainWidget.addWidget(self.invoicesWidget)
 		# Layout
-		self.setCentralWidget(self.itemList)
+		self.setCentralWidget(self.mainWidget)
 
 		self.show()
+	def initDbConnection(self):
+		self.dbConnection = QSqlDatabase()
+
+	def showDirectoryPage(self):
+		self.mainWidget.setCurrentIndex(0)
+
+	def showInvoicePage(self):
+		self.mainWidget.setCurrentIndex(1)
 
 	def addressContextDialog(self, point):
 		# Create the context menu widget
@@ -216,14 +249,17 @@ class ScribeMainWindow(QMainWindow):
 
 		self.addressContextMenu.show()
 
-		itemListOffset_x = self.itemList.pos().x()
-		itemListOffset_y = self.itemList.pos().y()
+		itemListOffsetX = self.itemList.pos().x()
+		itemListOffsetY = self.itemList.pos().y()
+
+		mainWidgetOffsetX = self.mainWidget.pos().x()
+		mainWidgetOffsetY = self.mainWidget.pos().y()
 
 		windowOffset_x = self.pos().x()
 		windowOffset_y = self.pos().y()
 
-		totalOffset_x = itemListOffset_x + windowOffset_x + 20
-		totalOffset_y = itemListOffset_y + windowOffset_y + 50
+		totalOffset_x = itemListOffsetX + mainWidgetOffsetX + windowOffset_x + 15
+		totalOffset_y = itemListOffsetY + mainWidgetOffsetY + windowOffset_y + 65
 
 		targetPoint = QPoint(point.x() + totalOffset_x, point.y() + totalOffset_y)
 
@@ -277,6 +313,10 @@ class ScribeMainWindow(QMainWindow):
 		helpDialog = QDialog()
 		helpDialog.resize(300, 300)
 		helpDialog.setWindowTitle("About")
+		helpLayout = QHBoxLayout()
+		helpText = QLabel("Ideas: 1) Calendar invoice view")
+		helpLayout.addWidget(helpText)
+		helpDialog.setLayout(helpLayout)
 		helpDialog.exec_()
 
 	# Exit
